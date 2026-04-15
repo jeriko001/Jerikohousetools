@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeriko's House Tools</title>
+  <link rel="icon" href="https://cdn2.iconfinder.com/data/icons/halloween-creeps-silhouettes/100/raven-512.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <style>
+    :root {
+      --md-beige:        #f5f0e8;
+      --md-beige-dark:   #ede6d6;
+      --md-beige-card:   #faf7f2;
+      --md-green:        #c8dfc8;
+      --md-green-dark:   #a8c5a0;
+      --md-green-accent: #5a8a5a;
+      --md-black:        #1a1a1a;
+      --md-gray:         #5c5c5c;
+      --md-gray-light:   #9e9e9e;
+      --md-white:        #ffffff;
+      --md-shadow:       rgba(90,138,90,0.12);
+      --md-shadow-lg:    rgba(90,138,90,0.2);
+      --navbar-h:        64px;
+      --searchbar-h:     68px;
+      --radius-sm:       8px;
+      --radius-md:       16px;
+      --radius-lg:       28px;
+      --transition:      0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--md-beige);
+      color: var(--md-black);
+      min-height: 100vh;
+      padding-top: var(--navbar-h);
+      padding-bottom: var(--searchbar-h);
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--navbar-h);
+      background: var(--md-white);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      box-shadow: 0 2px 8px var(--md-shadow);
+      z-index: 900;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--md-black);
+      white-space: nowrap;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .logo span { color: var(--md-green-accent); }
+
+    /* nav pills scroll container */
+    .nav-scroll {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .nav-scroll::-webkit-scrollbar { display: none; }
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 7px 14px;
+      border-radius: 50px;
+      border: 1.5px solid var(--md-green-dark);
+      background: transparent;
+      color: var(--md-black);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .nav-pill .material-icons-round { font-size: 16px; }
+    .nav-pill:hover, .nav-pill.active {
+      background: var(--md-green);
+      border-color: var(--md-green-accent);
+      box-shadow: 0 2px 8px var(--md-shadow);
+    }
+    .nav-pill .pill-arrow {
+      font-size: 14px;
+      transition: transform var(--transition);
+    }
+    .nav-pill.active .pill-arrow { transform: rotate(180deg); }
+
+    /* special fun pill */
+    .nav-pill.fun-pill {
+      background: var(--md-green);
+      border-color: var(--md-green-accent);
+    }
+    .nav-pill.fun-pill:hover {
+      background: var(--md-green-accent);
+      color: var(--md-white);
+    }
+
+    /* burger */
+    .burger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background var(--transition);
+      flex-shrink: 0;
+    }
+    .burger-btn:hover { background: var(--md-beige); }
+    .burger-btn .line {
+      width: 22px; height: 2px;
+      background: var(--md-black);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .burger-btn.active .line:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .burger-btn.active .line:nth-child(2) { opacity: 0; }
+    .burger-btn.active .line:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+    /* mobile menu overlay */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--navbar-h); left: 0; right: 0; bottom: var(--searchbar-h);
+      background: var(--md-white);
+      z-index: 800;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .mobile-menu.active { display: block; }
+    .mobile-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition);
+      gap: 8px;
+    }
+    .mobile-nav-item:hover { background: var(--md-beige); }
+    .mobile-nav-item .material-icons-round { font-size: 18px; color: var(--md-green-accent); }
+
+    /* ─── DROPDOWN PANEL ─── */
+    .dropdown-overlay {
+      display: none;
+      position: fixed;
+      top: var(--navbar-h); left: 0; right: 0;
+      background: rgba(26,26,26,0.18);
+      z-index: 700;
+      backdrop-filter: blur(2px);
+    }
+    .dropdown-overlay.active { display: block; }
+
+    .dropdown-panel {
+      display: none;
+      position: fixed;
+      top: var(--navbar-h);
+      left: 0; right: 0;
+      background: var(--md-white);
+      z-index: 750;
+      box-shadow: 0 8px 32px var(--md-shadow-lg);
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+      overflow: hidden;
+      max-height: calc(100vh - var(--navbar-h) - var(--searchbar-h) - 8px);
+      animation: panelSlide 0.22s cubic-bezier(.4,0,.2,1);
+    }
+    .dropdown-panel.active { display: flex; flex-direction: column; }
+
+    @keyframes panelSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-inner {
+      overflow-y: auto;
+      padding: 20px 24px 24px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--md-green-dark) transparent;
+    }
+
+    .panel-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--md-black);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--md-green);
+    }
+
+    /* subsections in panel */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .subsection {
+      background: var(--md-beige-card);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      border: 1px solid var(--md-beige-dark);
+    }
+    .subsection-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--md-green-accent);
+      margin-bottom: 10px;
+    }
+    .link-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .link-list a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: var(--md-black);
+      font-size: 13px;
+      font-weight: 400;
+      transition: background var(--transition), color var(--transition);
+    }
+    .link-list a:hover {
+      background: var(--md-green);
+      color: var(--md-black);
+    }
+    .link-list a .material-icons-round { font-size: 13px; color: var(--md-green-accent); opacity: 0.7; }
+
+    /* ─── ARCHIVE ACCORDION ─── */
+    .archive-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .acc-item { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--md-beige-dark); }
+    .acc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--md-beige-card);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--md-green-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      transition: background var(--transition);
+      gap: 8px;
+    }
+    .acc-header:hover { background: var(--md-green); }
+    .acc-header .material-icons-round { font-size: 16px; transition: transform var(--transition); }
+    .acc-item.open .acc-header .material-icons-round { transform: rotate(180deg); }
+    .acc-body {
+      display: none;
+      padding: 10px 12px 14px;
+      background: var(--md-white);
+    }
+    .acc-item.open .acc-body { display: block; }
+
+    /* ─── MAIN CONTENT ─── */
+    .main-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 40px 20px 32px;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 5vw, 52px);
+      color: var(--md-black);
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .hero h1 em { color: var(--md-green-accent); font-style: italic; }
+    .hero p {
+      color: var(--md-gray);
+      font-size: 15px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* quick access cards */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+    .quick-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 12px;
+      background: var(--md-white);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--md-black);
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid var(--md-beige-dark);
+      cursor: pointer;
+      transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+      text-align: center;
+    }
+    .quick-card:hover {
+      box-shadow: 0 4px 18px var(--md-shadow-lg);
+      border-color: var(--md-green-accent);
+      transform: translateY(-2px);
+    }
+    .quick-card .material-icons-round {
+      font-size: 28px;
+      color: var(--md-green-accent);
+    }
+
+    /* ─── FUN PAGE ─── */
+    .fun-page {
+      display: none;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+    .fun-page.active { display: block; }
+    .fun-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .fun-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: 1.5px solid var(--md-green-dark);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .fun-back:hover { background: var(--md-green); }
+    .fun-back .material-icons-round { font-size: 16px; }
+    .fun-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+    }
+
+    .fun-sections { display: flex; flex-direction: column; gap: 24px; }
+    .fun-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--md-green-accent);
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+    .fun-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 8px;
+    }
+    .fun-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--md-white);
+      border: 1px solid var(--md-beige-dark);
+      text-decoration: none;
+      color: var(--md-black);
+      font-size: 13px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .fun-link:hover {
+      background: var(--md-green);
+      border-color: var(--md-green-accent);
+    }
+    .fun-link .material-icons-round { font-size: 15px; color: var(--md-green-accent); }
+
+    /* ─── SEARCH BAR ─── */
+    .search-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--searchbar-h);
+      background: var(--md-white);
+      border-top: 1px solid var(--md-beige-dark);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 900;
+      box-shadow: 0 -2px 12px var(--md-shadow);
+    }
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+    #categorySearch {
+      width: 100%;
+      padding: 12px 44px 12px 18px;
+      border: 1.5px solid var(--md-green-dark);
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      background: var(--md-beige);
+      color: var(--md-black);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    #categorySearch:focus {
+      border-color: var(--md-green-accent);
+      box-shadow: 0 0 0 3px rgba(90,138,90,0.15);
+    }
+    #categorySearch::placeholder { color: var(--md-gray-light); }
+    .search-icon-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--md-green-accent);
+      pointer-events: none;
+    }
+    .search-icon-btn .material-icons-round { font-size: 20px; }
+
+    .search-results {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0; right: 0;
+      background: var(--md-white);
+      border-radius: var(--radius-md);
+      box-shadow: 0 -4px 24px var(--md-shadow-lg);
+      border: 1px solid var(--md-beige-dark);
+      max-height: 280px;
+      overflow-y: auto;
+      display: none;
+      scrollbar-width: thin;
+    }
+    .search-results.active { display: block; }
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      text-decoration: none;
+      color: var(--md-black);
+      font-size: 13px;
+      border-bottom: 1px solid var(--md-beige);
+      transition: background var(--transition);
+      gap: 8px;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--md-beige); }
+    .search-result-item .result-name { font-weight: 500; }
+    .search-result-item .result-cat {
+      font-size: 11px;
+      color: var(--md-green-accent);
+      background: var(--md-green);
+      padding: 2px 8px;
+      border-radius: 50px;
+      white-space: nowrap;
+    }
+
+    /* check button */
+    .check-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 50px;
+      border: 1.5px solid var(--md-green-dark);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+    .check-btn .material-icons-round { font-size: 16px; }
+    .check-btn:hover { background: var(--md-green); }
+
+    /* ─── POPUP ─── */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.4);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .popup-overlay.active { display: flex; }
+    .popup-card {
+      background: var(--md-white);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+      animation: popIn 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .popup-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--md-black);
+    }
+    .popup-body { font-size: 14px; color: var(--md-gray); line-height: 1.6; }
+    .popup-close {
+      margin-top: 20px;
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: none;
+      background: var(--md-green);
+      color: var(--md-black);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .popup-close:hover { background: var(--md-green-dark); }
+    .popup-list { list-style: none; margin-top: 8px; }
+    .popup-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--md-beige);
+      font-size: 13px;
+    }
+    .popup-list li:last-child { border-bottom: none; }
+    .popup-list .ok { color: #4caf50; }
+    .popup-list .err { color: #e53935; }
+    .popup-list .material-icons-round { font-size: 16px; }
+    .check-progress {
+      font-size: 13px;
+      color: var(--md-gray-light);
+      margin-top: 6px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      :root { --navbar-h: 60px; }
+      .nav-scroll { display: none; }
+      .burger-btn { display: flex; }
+      .logo { font-size: 17px; }
+      .panel-grid { grid-template-columns: 1fr 1fr; }
+      .quick-grid { grid-template-columns: repeat(3, 1fr); }
+      .check-btn span { display: none; }
+    }
+    @media (max-width: 480px) {
+      .quick-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-grid { grid-template-columns: 1fr; }
+      .fun-links-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="logo">Jeriko's <span>🐦‍⬛</span> tools</div>
+
+  <div class="nav-scroll" id="navScroll">
+    <!-- pills injected by JS -->
+  </div>
+
+  <div class="burger-btn" id="burgerBtn">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </div>
+</nav>
+
+<!-- mobile menu -->
+<div class="mobile-menu" id="mobileMenu"></div>
+
+<!-- dropdown overlay -->
+<div class="dropdown-overlay" id="dropdownOverlay"></div>
+
+<!-- dropdown panel -->
+<div class="dropdown-panel" id="dropdownPanel">
+  <div class="panel-inner" id="panelInner"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════ -->
+<div id="homePage">
+  <div class="hero">
+    <h1>Il tuo hub di<br><em>link utili</em></h1>
+    <p>Tutti i siti che usi ogni giorno, organizzati in un solo posto.</p>
+  </div>
+  <div class="main-content">
+    <div class="quick-grid" id="quickGrid"></div>
+  </div>
+</div>
+
+<!-- fun page -->
+<div class="fun-page" id="funPage">
+  <div class="fun-header">
+    <button class="fun-back" id="funBack">
+      <span class="material-icons-round">arrow_back</span>
+      Home
+    </button>
+    <div class="fun-title">🎮 Svago</div>
+  </div>
+  <div class="fun-sections" id="funSections"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEARCH BAR
+═══════════════════════════════════════════ -->
+<div class="search-bar">
+  <div class="search-wrap">
+    <input type="text" id="categorySearch" placeholder="Cerca un sito…" autocomplete="off">
+    <div class="search-icon-btn"><span class="material-icons-round">search</span></div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="check-btn" id="checkBtn">
+    <span class="material-icons-round">wifi_tethering</span>
+    <span>Verifica siti</span>
+  </button>
+</div>
+
+<!-- popup -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-card">
+    <div class="popup-title" id="popupTitle">Verifica siti</div>
+    <div class="popup-body" id="popupBody"></div>
+    <button class="popup-close" id="popupClose">Chiudi</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     DATA + LOGIC
+═══════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const SECTIONS = [
+  {
+    id: 'tools',
+    label: 'Tools',
+    icon: 'build_circle',
+    sub: [
+      { title: 'Utilità generali', links: [
+        { n:'Virustotal',       u:'https://virustotal.com' },
+        { n:'Snapdrop',         u:'https://onedoes.github.io/snapdrop/' },
+        { n:'Dictation',        u:'https://dictation.io/speech' },
+        { n:'Copychar',         u:'https://copychar.cc/' },
+        { n:'DeepL',            u:'https://www.deepl.com/it/translator' },
+        { n:'Downdetector',     u:'https://downdetector.it/' },
+        { n:'Cedarlakeventures',u:'https://cedarlakeventures.com/' },
+        { n:'WolframAlpha',     u:'https://www.wolframalpha.com/' },
+        { n:'Ninite',           u:'https://ninite.com' },
+        { n:'Instructables',    u:'https://www.instructables.com/' },
+      ]},
+      { title: 'Trasferimento file', links: [
+        { n:'SwissTransfer', u:'https://www.swisstransfer.com/it-it' },
+        { n:'Smash',         u:'https://fromsmash.com/it' },
+      ]},
+      { title: 'Generatori / Casuali', links: [
+        { n:'FakeNameGenerator', u:'https://it.fakenamegenerator.com/' },
+        { n:'Donjon',            u:'https://donjon.bin.sh/' },
+        { n:'Random.org',        u:'https://www.random.org/' },
+      ]},
+      { title: 'Ricerca persone / Username', links: [
+        { n:'Namechk',        u:'https://namechk.com/' },
+        { n:'WhatsMyName',    u:'https://whatsmyname.app/' },
+        { n:'ContactOut',     u:'https://contactout.com/' },
+        { n:'Pimeyes',        u:'https://pimeyes.com/en' },
+        { n:'Reverse.photos', u:'https://reverse.photos' },
+        { n:'Facecheck.id',   u:'https://facecheck.id' },
+        { n:'TinEye',         u:'https://tineye.com/' },
+      ]},
+      { title: 'Privacy & Sicurezza', links: [
+        { n:'HaveIBeenPwned',   u:'https://haveibeenpwned.com/' },
+        { n:'Cybernews Leak',   u:'https://cybernews.com/personal-data-leak-check/' },
+        { n:'Mozilla Observatory',u:'https://observatory.mozilla.org' },
+        { n:'Blacklight',       u:'https://themarkup.org/blacklight' },
+        { n:'ToSDR',            u:'https://tosdr.org/en' },
+        { n:'Forensically',     u:'https://29a.ch/photo-forensics/#forensic-magnifier' },
+        { n:'FotoForensics',    u:'https://fotoforensics.com/' },
+      ]},
+      { title: 'Temp / Anonimi', links: [
+        { n:'Temp-Mail',     u:'https://temp-mail.org/it/' },
+        { n:'Temp-Number',   u:'https://temp-number.org/app/' },
+        { n:'VeepN SMS',     u:'https://veepn.com/it/online-sms/italy' },
+        { n:'SMS24.me',      u:'https://sms24.me' },
+      ]},
+    ]
+  },
+  {
+    id: 'conv',
+    label: 'Convertitori & Downloader',
+    icon: 'sync_alt',
+    sub: [
+      { title: 'Convertitori', links: [
+        { n:'Convertio',      u:'https://convertio.co/it/' },
+        { n:'CloudConvert',   u:'https://cloudconvert.com/' },
+        { n:'Vectorizer.ai',  u:'https://vectorizer.ai/' },
+        { n:'OnlineOCR',      u:'https://www.onlineocr.net/' },
+        { n:'Converti Unità', u:'https://www.convertire-unita.info/index.php' },
+      ]},
+      { title: 'Downloader media', links: [
+        { n:'Cobalt',           u:'https://cobalt.tools' },
+        { n:'VideoDownloader',  u:'https://videodownloader.so/en/' },
+        { n:'Clipr',            u:'https://clipr.xyz/' },
+        { n:'Freemake',         u:'https://www.freemake.com/it/free_video_downloader_nice/' },
+        { n:'DownSub',          u:'https://downsub.com/' },
+        { n:'ShortsNoob',       u:'https://shortsnoob.com/en' },
+        { n:'URLeBird',         u:'https://urlebird.com/it/' },
+        { n:'Pasty',            u:'https://pasty.info' },
+        { n:'Inflact DL',       u:'https://inflact.com/it/downloader/' },
+        { n:'RapidSave',        u:'https://rapidsave.com/' },
+        { n:'RedKetchup Twitter',u:'https://redketchup.io/twitter-downloader' },
+        { n:'YT Thumbnail',     u:'https://youtube-thumbnail-grabber.co' },
+        { n:'ImgDownloader',    u:'https://imgdownloader.com/' },
+        { n:'Extract.pics',     u:'https://extract.pics/' },
+        { n:'Getty DL',         u:'https://downloader.la/gettyimages-downloader.html' },
+        { n:'Rakko Tools',      u:'https://en.rakko.tools/tools/56/' },
+        { n:'UnlistedVideos',   u:'https://unlistedvideos.com/' },
+        { n:'Metadata2go',      u:'https://www.metadata2go.com/extract-video-streams' },
+      ]},
+      { title: 'Remove Paywall', links: [
+        { n:'RemovePaywall',   u:'https://www.removepaywall.com/' },
+        { n:'ArchiveButtons',  u:'https://archivebuttons.com' },
+        { n:'Open Bolha',      u:'https://open.bolha.tools/' },
+      ]},
+    ]
+  },
+  {
+    id: 'editor',
+    label: 'Editor',
+    icon: 'photo_filter',
+    sub: [
+      { title: 'Immagini', links: [
+        { n:'Photopea',         u:'https://www.photopea.com/' },
+        { n:'Pixlr',            u:'https://pixlr.com/it/' },
+        { n:'Cleanup.pictures', u:'https://cleanup.pictures/' },
+        { n:'TheInpaint',       u:'https://theinpaint.com/' },
+        { n:'Remove.bg',        u:'https://www.remove.bg/it' },
+        { n:'WatermarkRemover', u:'https://www.watermarkremover.io/it' },
+        { n:'ClipDrop',         u:'https://clipdrop.co/' },
+        { n:'iLoveIMG',         u:'https://www.iloveimg.com/it' },
+        { n:'IMG2GO',           u:'https://www.img2go.com/' },
+        { n:'RedKetchup',       u:'https://redketchup.io/' },
+        { n:'PNGimg',           u:'https://pngimg.com/' },
+        { n:'Designevo',        u:'https://www.designevo.com/' },
+        { n:'IKEA Planner',     u:'https://www.ikea.com/us/en/planners/' },
+        { n:'Paperme',          u:'https://paperme.pixzens.com/en' },
+        { n:'Mysketchbooth',    u:'https://mysketchbooth.com/' },
+        { n:'Batname',          u:'https://batname.vercel.app' },
+        { n:'ImageColorPicker', u:'https://imagecolorpicker.com/' },
+        { n:'Vecticon',         u:'https://www.vecticon.co/it' },
+        { n:'Giphy',            u:'https://giphy.com/' },
+        { n:'BgRemove Dverso',  u:'https://tools.dverso.io/bgremove/' },
+        { n:'Remove.photos',    u:'https://remove.photos' },
+        { n:'Vertex.im',        u:'https://vertex.im/' },
+      ]},
+      { title: 'Video', links: [
+        { n:'Kapwing',          u:'https://www.kapwing.com/' },
+        { n:'Unscreen',         u:'https://www.unscreen.com/' },
+        { n:'Clideo',           u:'https://clideo.com/it' },
+        { n:'Media.io (WM)',    u:'https://www.media.io/video-watermark-remover.html' },
+        { n:'Jitter Video',     u:'https://jitter.video' },
+        { n:'PixelMotion.art',  u:'https://pixelmotion.art' },
+        { n:'VideoHighlight',   u:'https://videohighlight.com/' },
+      ]},
+      { title: 'Audio', links: [
+        { n:'Wavacity',         u:'https://wavacity.com/' },
+        { n:'SplitMySong',      u:'https://splitmysong.com' },
+        { n:'VocalRemover',     u:'https://vocalremover.org/splitter-ai' },
+        { n:'TagMP3',           u:'https://tagmp3.net/' },
+      ]},
+      { title: 'Tutto-in-uno / PDF', links: [
+        { n:'TinyWow',     u:'https://tinywow.com/' },
+        { n:'123apps',     u:'https://123apps.com/it/' },
+        { n:'iLovePDF',    u:'https://www.ilovepdf.com/it' },
+        { n:'SimplePDF',   u:'https://simplepdf.com/it/editor' },
+        { n:'RollApp',     u:'https://www.rollapp.com/apps' },
+        { n:'Polotno',     u:'https://studio.polotno.com/' },
+        { n:'Placeit',     u:'https://placeit.net/' },
+        { n:'Canva',       u:'https://www.canva.com/' },
+        { n:'Figma',       u:'https://www.figma.com/' },
+        { n:'Texs.org',    u:'https://texs.org/' },
+      ]},
+      { title: 'Font & Tipografia', links: [
+        { n:'Uncut.wtf',   u:'https://uncut.wtf' },
+        { n:'Fontshare',   u:'https://fontshare.com' },
+        { n:'Fontstruct',  u:'https://fontstruct.com/' },
+      ]},
+    ]
+  },
+  {
+    id: 'design',
+    label: 'Design & Colori',
+    icon: 'palette',
+    sub: [
+      { title: 'Colori', links: [
+        { n:'Coolors',    u:'https://coolors.co/' },
+        { n:'0to255',     u:'https://0to255.com/studio/408e6a' },
+        { n:'Picular',    u:'https://www.picular.co/' },
+        { n:'Palette.fm', u:'https://palette.fm' },
+      ]},
+      { title: 'Icone', links: [
+        { n:'Iconfinder',     u:'https://www.iconfinder.com/' },
+        { n:'Iconscout',      u:'https://iconscout.com/unicons' },
+        { n:'Tabler Icons',   u:'https://tablericons.com/' },
+        { n:'Orion Icons',    u:'https://www.orioniconlibrary.com/all-icons' },
+        { n:'Lordicon',       u:'https://lordicon.com/' },
+        { n:'Noun Project',   u:'https://thenounproject.com/' },
+        { n:'Textfaces',      u:'https://textfac.es/' },
+      ]},
+      { title: 'Design Reference', links: [
+        { n:'Are.na',          u:'https://www.are.na' },
+        { n:'Fonts In Use',    u:'https://fontsinuse.com' },
+        { n:'Logo Archive',    u:'https://logoarchive.org' },
+        { n:'Brand New',       u:'https://www.underconsideration.com/brandnew' },
+        { n:'Packaging World', u:'https://packagingoftheworld.com' },
+        { n:'AIGA Archives',   u:'https://designarchives.aiga.org' },
+        { n:'Monoskop',        u:'https://monoskop.org' },
+        { n:'Public Domain R.',u:'https://publicdomainreview.org' },
+        { n:'Letterform Arch.',u:'https://oa.letterformarchive.org' },
+        { n:'Wordmark.it',     u:'https://wordmark.it' },
+        { n:'Art of the Title',u:'https://artofthetitle.com' },
+        { n:'Eyecannndy',      u:'https://eyecannndy.com' },
+        { n:'Frameset.app',    u:'https://frameset.app' },
+        { n:'Lupa.art',        u:'https://lupa.art/' },
+      ]},
+    ]
+  },
+  {
+    id: 'ia',
+    label: 'IA',
+    icon: 'auto_awesome',
+    sub: [
+      { title: 'Principali', links: [
+        { n:'ChatGPT',  u:'https://chat.openai.com/' },
+        { n:'Gemini',   u:'https://gemini.google.com/' },
+        { n:'Claude',   u:'https://claude.ai/' },
+        { n:'Copilot',  u:'https://copilot.microsoft.com/' },
+        { n:'TAAIFT',   u:'https://theresanaiforthat.com/' },
+        { n:'HuggingFace',u:'https://huggingface.co/' },
+      ]},
+      { title: 'Testo & Produttività', links: [
+        { n:'GetWoord',     u:'https://www.getwoord.com/' },
+        { n:'NaturalReaders',u:'https://www.naturalreaders.com/' },
+        { n:'Async',        u:'https://async.com/' },
+        { n:'Gamma.app',    u:'https://gamma.app' },
+        { n:'Rytr',         u:'https://rytr.me' },
+        { n:'TextCompare',  u:'https://text-compare.com' },
+        { n:'Adam.new',     u:'https://adam.new' },
+      ]},
+      { title: 'Immagini & Video IA', links: [
+        { n:'Meshy.ai',    u:'https://www.meshy.ai/it/' },
+        { n:'Deevid.ai',   u:'https://deevid.ai/it/image-to-video' },
+        { n:'Pacdora',     u:'https://pacdora.com' },
+        { n:'Backflip.ai', u:'https://backflip.ai' },
+        { n:'ReadTheirLips',u:'https://www.readtheirlips.com/' },
+      ]},
+      { title: 'Geo-IA', links: [
+        { n:'WhereIsThisPlace', u:'https://whereisthisplace.net/' },
+        { n:'WhereIsThisPhoto', u:'https://www.whereisthisphoto.com/' },
+        { n:'Picarta.ai',       u:'https://picarta.ai/' },
+        { n:'Geospy.ai',        u:'https://geospy.ai/' },
+      ]},
+    ]
+  },
+  {
+    id: 'film',
+    label: 'Film & Video',
+    icon: 'movie',
+    sub: [
+      { title: 'Dove guardare', links: [
+        { n:'Doveguardarlo', u:'https://www.doveguardarlo.it/' },
+        { n:'JustWatch',     u:'https://www.justwatch.com/it' },
+        { n:'StaseraInTV',   u:'https://www.staseraintv.com/' },
+        { n:'Diretta.it',    u:'https://www.diretta.it/' },
+        { n:'Zappr.stream',  u:'https://zappr.stream' },
+        { n:'Viloud HLS',    u:'https://viloud.tv/hls-stream-tester/' },
+      ]},
+      { title: 'Database film', links: [
+        { n:'IMDB',     u:'https://www.imdb.com/it/' },
+        { n:'TMDB',     u:'https://www.themoviedb.org/?language=it-IT' },
+        { n:'BoxOfficeMojo',u:'https://www.boxofficemojo.com/' },
+        { n:'CineFiles', u:'https://cinefiles.bampfa.berkeley.edu' },
+        { n:'Cinematheque Fr.',u:'https://www.cinematheque.fr' },
+        { n:'BFI Archive',u:'https://www.bfi.org.uk/archive' },
+        { n:'Movie-matcher',u:'https://movie-matcher.com' },
+      ]},
+      { title: 'Cose dagli show', links: [
+        { n:'Tunefind',    u:'https://www.tunefind.com/' },
+        { n:'ShopYourTV',  u:'https://www.shopyourtv.com/' },
+        { n:'Spotern',     u:'https://www.spotern.com/en' },
+        { n:'WornOnTV',    u:'https://wornontv.net/' },
+      ]},
+      { title: 'Frasi / Scene / Analisi', links: [
+        { n:'PlayPhrase',    u:'https://www.playphrase.me/#/search?language=en' },
+        { n:'Film-Grab',     u:'https://film-grab.com/' },
+        { n:'Quodb',         u:'https://www.quodb.com/' },
+        { n:'DoesTheDogDie', u:'https://doesthedogdie.com' },
+        { n:'NoFilmSchool',  u:'https://nofilmschool.com' },
+        { n:'Director\'s Lib.',u:'https://directorslibrary.com' },
+      ]},
+      { title: 'Risorse free', links: [
+        { n:'Mixkit',       u:'https://mixkit.co' },
+        { n:'Pexels Video', u:'https://www.pexels.com/it-it/videos/' },
+        { n:'Filmtipo',     u:'https://filmtipo.com/' },
+      ]},
+    ]
+  },
+  {
+    id: 'musica',
+    label: 'Musica & Audio',
+    icon: 'queue_music',
+    sub: [
+      { title: 'Radio / Streaming', links: [
+        { n:'Radio.garden',  u:'https://radio.garden/' },
+        { n:'TV.garden',     u:'https://tv.garden/it' },
+        { n:'Lofigirl',      u:'https://lofigirl.com/generator/' },
+        { n:'Radiomusik.it', u:'https://radiomusik.it' },
+      ]},
+      { title: 'Ambienti sonori', links: [
+        { n:'Noisli',      u:'https://www.noisli.com/' },
+        { n:'iMissMyC afè',u:'https://imissmycafe.com/' },
+        { n:'LifeAt',      u:'https://lifeat.io/' },
+      ]},
+      { title: 'Scoperta musicale', links: [
+        { n:'Chosic',      u:'https://chosic.com' },
+        { n:'Music-map',   u:'https://www.music-map.com/' },
+        { n:'Musicca',     u:'https://musicca.com' },
+        { n:'NuoveCanzoni',u:'https://nuovecanzoni.com' },
+        { n:'Discogs',     u:'https://www.discogs.com' },
+        { n:'WFMU',        u:'https://wfmu.org' },
+      ]},
+      { title: 'Archivi audio', links: [
+        { n:'Free Music Archive',u:'https://freemusicarchive.org' },
+        { n:'BBC Sound Effects',  u:'https://sound-effects.bbcrewind.co.uk' },
+        { n:'KHInsider (VGM)',    u:'https://downloads.khinsider.com/' },
+        { n:'TagMP3',             u:'https://tagmp3.net/' },
+      ]},
+      { title: 'Utilities audio', links: [
+        { n:'Rave.dj', u:'https://rave.dj/mix' },
+      ]},
+    ]
+  },
+  {
+    id: 'mappe',
+    label: 'Mappe & Viaggi',
+    icon: 'explore',
+    sub: [
+      { title: 'Viaggi', links: [
+        { n:'Atlas Obscura',  u:'https://www.atlasobscura.com/' },
+        { n:'TasteAtlas',     u:'https://www.tasteatlas.com/' },
+        { n:'ShadeMap',       u:'https://shademap.app' },
+        { n:'Flightradar24',  u:'https://www.flightradar24.com' },
+        { n:'City Roads',     u:'https://anvaka.github.io/city-roads/' },
+        { n:'Geo-FS',         u:'https://geo-fs.com' },
+      ]},
+      { title: 'Mappe creative / Gioco', links: [
+        { n:'Watabou',           u:'https://watabou.itch.io/' },
+        { n:'HappyIslandDesigner',u:'https://eugeneration.github.io/HappyIslandDesigner/' },
+        { n:'Inkarnate',         u:'https://inkarnate.com/maps' },
+        { n:'MapGenie',          u:'https://mapgenie.io' },
+        { n:'DungeonScrawl',     u:'https://dungeonscrawl.com' },
+        { n:'TerraInk',          u:'https://terraink.app' },
+        { n:'Noclip',            u:'https://noclip.website/' },
+        { n:'Floor796',          u:'https://floor796.com' },
+      ]},
+    ]
+  },
+  {
+    id: 'archivi',
+    label: 'Archivi & Database',
+    icon: 'library_books',
+    isArchive: true,
+    sub: [
+      { title: '🌐 Generali', links: [
+        { n:'Internet Archive',  u:'https://archive.org/' },
+        { n:'Wayback Machine',   u:'https://web.archive.org/' },
+        { n:'Archive.is',        u:'https://archive.is/' },
+        { n:'Open Library',      u:'https://openlibrary.org' },
+        { n:'Project Gutenberg', u:'https://www.gutenberg.org' },
+        { n:'WorldCat',          u:'https://search.worldcat.org/it' },
+        { n:"Anna's Archive",    u:'https://annas-archive.gl' },
+        { n:'HathiTrust',        u:'https://www.hathitrust.org' },
+        { n:'Europeana',         u:'https://www.europeana.eu' },
+        { n:'DPLA',              u:'https://dp.la' },
+        { n:'ArchiveGrid',       u:'https://researchworks.oclc.org/archivegrid' },
+        { n:'Learn Anything',    u:'https://learn-anything.xyz/' },
+        { n:'OMGLord',           u:'https://www.omglord.com/' },
+        { n:'Cheatography',      u:'https://cheatography.com/' },
+      ]},
+      { title: '📚 Biblioteche nazionali', links: [
+        { n:'Library of Congress',    u:'https://www.loc.gov/collections' },
+        { n:'Gallica (BnF)',           u:'https://gallica.bnf.fr' },
+        { n:'British Library',         u:'https://www.bl.uk' },
+        { n:'Deutsche Dig. Bibliothek',u:'https://www.deutsche-digitale-bibliothek.de' },
+        { n:'Biblioteca Nacional ES',  u:'https://www.bne.es' },
+        { n:'Internet Culturale',      u:'https://www.internetculturale.it/' },
+      ]},
+      { title: '🖼 Immagini / Arte / Design', links: [
+        { n:'Met Museum',         u:'https://www.metmuseum.org/art/collection' },
+        { n:'Rijksmuseum',        u:'https://www.rijksmuseum.nl/en/collection' },
+        { n:'NYPL Digital',       u:'https://digitalcollections.nypl.org' },
+        { n:'Wellcome Collection',u:'https://wellcomecollection.org/works' },
+        { n:'Brooklyn Museum',    u:'https://www.brooklynmuseum.org/opencollection' },
+        { n:'Smithsonian',        u:'https://www.si.edu/openaccess' },
+        { n:'Cooper Hewitt',      u:'https://collection.cooperhewitt.org' },
+        { n:'Bauhaus',            u:'https://www.bauhauskooperation.com/en/atlas' },
+        { n:'Vitra Design',       u:'https://collection.vitra.com' },
+        { n:'MoMA',               u:'https://www.moma.org/collection' },
+        { n:'Flickr Commons',     u:'https://www.flickr.com/commons' },
+        { n:'Biodiversity Heritage',u:'https://www.biodiversitylibrary.org' },
+        { n:'David Rumsey Maps',  u:'https://www.davidrumsey.com' },
+        { n:'Same.energy',        u:'https://same.energy/' },
+        { n:'Cosmos.so',          u:'https://www.cosmos.so/' },
+        { n:'Public.work',        u:'https://public.work/' },
+      ]},
+      { title: '🎞 Film / Video d\'archivio', links: [
+        { n:'Prelinger Archives', u:'https://archive.org/details/prelinger' },
+        { n:'UbuWeb',             u:'https://ubu.com' },
+        { n:'Public Domain Movies',u:'https://publicdomainmovie.net' },
+        { n:'WikiFlix',           u:'https://wikiflix.toolforge.org/#/' },
+        { n:'Rarefilmm',          u:'https://rarefilmm.com' },
+        { n:'British Pathé',      u:'https://www.britishpathe.com' },
+        { n:'VHS Vault',          u:'https://archive.org/details/vhsvault' },
+        { n:'Everything Is Terrible',u:'https://everythingisterrible.com' },
+        { n:'Asian Film Archive', u:'https://www.asianfilmarchive.org' },
+        { n:'World Cinema Project',u:'https://www.theworldcinemaproject.org' },
+        { n:'Anthology Film Arch.',u:'http://anthologyfilmarchives.org' },
+        { n:'Canyon Cinema',      u:'http://canyoncinema.com' },
+      ]},
+      { title: '📰 Giornali / Testi', links: [
+        { n:'Chronicling America',u:'https://chroniclingamerica.loc.gov' },
+        { n:'Google Books',       u:'https://books.google.com' },
+        { n:'JSTOR',              u:'https://www.jstor.org' },
+        { n:'Trove (AU)',         u:'https://trove.nla.gov.au' },
+        { n:'Elephind',           u:'https://www.elephind.com' },
+        { n:'Delpher (NL)',       u:'https://www.delpher.nl' },
+        { n:'ANNO (AT)',          u:'https://anno.onb.ac.at' },
+        { n:'British Newspaper', u:'https://www.britishnewspaperarchive.co.uk/' },
+        { n:'Emeroteca Digitale', u:'https://emerotecadigitale.braidense.it' },
+        { n:'La Stampa Archivio', u:'https://archivio.lastampa.it' },
+        { n:'Quotidiani.net',     u:'https://quotidiani.net' },
+        { n:'Papers Past (NZ)',   u:'https://paperspast.natlib.govt.nz' },
+        { n:'OldNews',            u:'https://oldnews.com' },
+      ]},
+      { title: '💾 Software / Tech', links: [
+        { n:'My Abandonware',  u:'https://www.myabandonware.com' },
+        { n:'WinWorld',        u:'https://winworldpc.com' },
+        { n:'Computer History',u:'https://www.computerhistory.org/collections' },
+        { n:'Vetusware',       u:'https://vetusware.com/' },
+        { n:'HomeOfUnderdogs', u:'https://homeoftheunderdogs.net/' },
+        { n:'JavaGames',       u:'https://javagames.cc' },
+        { n:'iFixit',          u:'https://it.ifixit.com/' },
+        { n:'ManualsLib',      u:'https://www.manualslib.com/' },
+        { n:'CarCareKiosk',    u:'https://carcarekiosk.com' },
+      ]},
+      { title: '🏭 Industriale / Brevetti', links: [
+        { n:'Google Patents',    u:'https://patents.google.com' },
+        { n:'Espacenet',         u:'https://worldwide.espacenet.com' },
+        { n:'USPTO',             u:'https://www.uspto.gov/patents/search' },
+        { n:'Vintage Machinery', u:'http://vintagemachinery.org' },
+        { n:'Science Museum',    u:'https://collection.sciencemuseumgroup.org.uk' },
+        { n:'Avialogs',          u:'https://www.avialogs.com' },
+        { n:'HNSA Manuals',      u:'https://www.hnsa.org/manuals-documents' },
+        { n:'Nokia Design Arch.',u:'https://nokiadesignarchive.aalto.fi/' },
+        { n:'V&A Museum',        u:'https://collections.vam.ac.uk' },
+        { n:'Powerhouse Museum', u:'https://collection.maas.museum' },
+        { n:'Obsolete Media',    u:'https://obsoletemedia.org' },
+        { n:'American Radio Hist.',u:'https://worldradiohistory.com' },
+      ]},
+      { title: '🚗 Auto', links: [
+        { n:'Auto Catalog Archive',u:'https://www.autocatalogarchive.com' },
+        { n:'Old Car Brochures',   u:'http://www.oldcarbrochures.org' },
+        { n:'Car Brochure Addict', u:'https://www.carbrochureaddict.com' },
+        { n:'Old Car Manuals',     u:'http://www.oldcarmanualproject.com' },
+      ]},
+      { title: '🎨 Animazione', links: [
+        { n:'Animation Resources', u:'https://animationresources.org' },
+        { n:'Cartoon Brew',        u:'https://www.cartoonbrew.com' },
+      ]},
+      { title: '🎮 Giochi & Flash', links: [
+        { n:'Flashpoint DB',       u:'https://flashpointproject.github.io/flashpoint-database/' },
+        { n:'FlashMuseum',         u:'https://flashmuseum.org/' },
+        { n:'Console Living Room', u:'https://archive.org/details/consolelivingroom' },
+        { n:'IGDB',                u:'https://www.igdb.com/' },
+        { n:'RAWG',                u:'https://rawg.io' },
+        { n:'Arcadespace',         u:'https://arcadespot.com/' },
+      ]},
+      { title: '🇮🇹 Cultura italiana', links: [
+        { n:'Doppiaggio (Genna)',  u:'https://antoniogenna.net' },
+        { n:'PromoQui',            u:'https://www.promoqui.it/' },
+      ]},
+      { title: '🌏 Asia', links: [
+        { n:'SAOA (JSTOR)',        u:'https://www.jstor.org/site/saoa/' },
+        { n:'SE Asia Digital Lib.',u:'https://sea.lib.niu.edu' },
+        { n:'Sahapedia',           u:'https://www.sahapedia.org' },
+        { n:'KITLV Leiden',        u:'https://digitalcollections.universiteitleiden.nl' },
+      ]},
+      { title: '🕌 Medio Oriente', links: [
+        { n:'DLME',                u:'https://dlmenetwork.org/library' },
+        { n:'Arab Image Foundation',u:'https://www.arabimagefounda tion.org' },
+        { n:'ACO (NYU)',           u:'https://dlib.nyu.edu/aco' },
+        { n:'Jrayed',              u:'https://jrayed.org' },
+        { n:'Palestine Poster',    u:'https://www.palestineposterproject.org' },
+        { n:'Nat. Library Israel', u:'https://www.nli.org.il' },
+      ]},
+      { title: '🌍 Africa', links: [
+        { n:'AODL',                u:'https://aodl.org' },
+        { n:'The African Archives',u:'https://theafricanarchives.org' },
+        { n:'SA History Online',   u:'https://www.sahistory.org.za' },
+        { n:'DISA',                u:'https://www.disa.ukzn.ac.za' },
+        { n:'Hist. Papers (Wits)', u:'https://historicalpapers.wits.ac.za' },
+      ]},
+      { title: '🗺 Meta-archivi', links: [
+        { n:'Inedits Online',      u:'https://inedits.eu/en/resources/online-archives/' },
+        { n:'Avant-Garde Film Idx',u:'https://avantgardefilmindex.org/links/' },
+        { n:'Archive of American TV',u:'https://interviews.televisionacademy.com' },
+        { n:'Calisphere',          u:'https://calisphere.org' },
+        { n:'Online Archive of CA',u:'https://oac.cdlib.org' },
+      ]},
+    ]
+  },
+  {
+    id: 'alternative',
+    label: 'Alternative & Simili',
+    icon: 'compare_arrows',
+    sub: [
+      { title: 'Trova alternative', links: [
+        { n:'AlternativeTo',      u:'https://alternativeto.net' },
+        { n:'TopBestAlternatives',u:'https://www.topbestalternatives.com/' },
+        { n:'SimilarSites',       u:'https://www.similarsites.com/' },
+        { n:'VersusUtil',         u:'https://versusutil.com/' },
+      ]},
+      { title: 'Simili - Film/Serie', links: [
+        { n:'Filmtipo',       u:'https://filmtipo.com/' },
+        { n:'SerieSimili',    u:'https://seriesimili.it' },
+        { n:'Movie-matcher',  u:'https://movie-matcher.com' },
+      ]},
+      { title: 'Simili - Musica', links: [
+        { n:'Chosic',    u:'https://chosic.com' },
+        { n:'Music-map', u:'https://www.music-map.com/' },
+      ]},
+    ]
+  },
+  {
+    id: 'varie',
+    label: 'Varie',
+    icon: 'category',
+    sub: [
+      { title: 'Immagini database', links: [
+        { n:'Same.energy',  u:'https://same.energy/' },
+        { n:'Cosmos.so',    u:'https://www.cosmos.so/' },
+        { n:'Public.work',  u:'https://public.work/' },
+        { n:'Pinterest',    u:'https://it.pinterest.com/' },
+        { n:'DeviantArt',   u:'https://www.deviantart.com/' },
+      ]},
+      { title: '3D / Stampa', links: [
+        { n:'Sketchfab',   u:'https://sketchfab.com' },
+        { n:'Thingiverse', u:'https://www.thingiverse.com' },
+      ]},
+      { title: 'Cartamodelli / Cosplay', links: [
+        { n:'TailorNova',        u:'https://tailornova.com' },
+        { n:'FreeSewing',        u:'https://freesewing.eu' },
+        { n:'Cimopedia',         u:'https://www.cimopedia.com/' },
+        { n:'Cospayton',         u:'https://cospayton.com/collections/all-products' },
+        { n:'Papermau',          u:'https://papermau.blogspot.com' },
+        { n:'CardboardAdventures',u:'https://www.cardboardadventures.co.uk/' },
+      ]},
+      { title: 'Cucina', links: [
+        { n:'SuperCook',    u:'https://supercook.com' },
+        { n:'MyFridgeFood', u:'https://myfridgefood.com' },
+        { n:'ChefGPT',      u:'https://chefgpt.xyz' },
+      ]},
+      { title: 'Fitness', links: [
+        { n:'MuscleWiki',   u:'https://musclewiki.com/it-it' },
+        { n:'Workout.cool', u:'https://workout.cool' },
+        { n:'ExRx',         u:'https://exrx.net' },
+      ]},
+      { title: 'Riferimenti creativi', links: [
+        { n:'Posemaniacs', u:'https://www.posemaniacs.com/' },
+        { n:'X6UD 3D ref', u:'https://x6ud.github.io/#/' },
+        { n:'Depth of Field',u:'https://jherr.github.io/depth-of-field/' },
+        { n:'Filmtipo',    u:'https://filmtipo.com/' },
+      ]},
+      { title: 'Personalizzazione', links: [
+        { n:'Funko Pop Yourself',u:'https://funko.com/pop-yourself' },
+        { n:'MyClipper',         u:'https://myclipper.eu/product/clipper-personalizzato-stampa/' },
+      ]},
+      { title: 'Varie utili', links: [
+        { n:'WolframAlpha', u:'https://www.wolframalpha.com/' },
+        { n:'Flightradar',  u:'https://www.flightradar24.com' },
+        { n:'Diretta.it',   u:'https://www.diretta.it/' },
+        { n:'Cheatography', u:'https://cheatography.com/' },
+        { n:'YTDB',         u:'https://ytdb.io/' },
+      ]},
+    ]
+  },
+  {
+    id: 'ecommerce',
+    label: 'Shop',
+    icon: 'storefront',
+    sub: [
+      { title: 'Carte & Giochi', links: [
+        { n:'CardMarket',       u:'https://www.cardmarket.com/it' },
+        { n:'CardGameClub',     u:'https://cardgameclub.it/' },
+      ]},
+      { title: 'Collezioni', links: [
+        { n:'ConsoleVariations',u:'https://consolevariations.com/' },
+        { n:'NonSoloSorpresine',u:'http://www.nonsolosorpresine.it/ita/default.asp' },
+        { n:'FunkoPopMania',    u:'https://funkopopmania.it/elenco-completo' },
+      ]},
+      { title: 'Parti / Riparazioni', links: [
+        { n:'AppliancePartsPros',u:'https://www.appliancepartspros.com/' },
+      ]},
+    ]
+  },
+];
+
+// FUN PAGE DATA
+const FUN_SECTIONS = [
+  { title: '🕹 Giochi classici & Arcade', links: [
+    { n:'Newgrounds',     u:'https://www.newgrounds.com/' },
+    { n:'PlayRetroGames', u:'https://playretrogames.com/' },
+    { n:'Y8',             u:'https://it.y8.com/' },
+    { n:'FlashGames.it',  u:'https://www.flashgames.it/' },
+    { n:'Minigiochi',     u:'https://www.minigiochi.com/' },
+    { n:'ClassicArcade',  u:'https://www.classicgamesarcade.com/' },
+    { n:'GamesFrog',      u:'https://gamesfrog.com/' },
+    { n:'ArcadeSpot',     u:'https://arcadespot.com/' },
+    { n:'ArcadeSpace',    u:'https://arcadespace.org' },
+    { n:'Reludi',         u:'https://www.reludi.com/' },
+    { n:'Solitalian',     u:'https://www.solitalian.it/' },
+    { n:'BoardGameArena', u:'https://it.boardgamearena.com/' },
+    { n:'LostGamer',      u:'https://lostgamer.io/' },
+    { n:'Play-Cloud',     u:'https://www.play-cloud.com/' },
+    { n:'TotalJerkface',  u:'https://totaljerkface.com/happy_wheels.tjf' },
+    { n:'Chess',          u:'https://chess.barr.media/' },
+    { n:'PokemonShowdown',u:'https://play.pokemonshowdown.com/' },
+    { n:'PokéMMO',        u:'https://pokemmo.com/it/' },
+    { n:'Mecabricks',     u:'https://www.mecabricks.com/it/' },
+    { n:'JavaGames',      u:'https://javagames.cc/' },
+    { n:'MyEmulator',     u:'https://myemulator.onl/' },
+    { n:'Tyrones Unblocked',u:'https://sites.google.com/view/tyronesgameshack' },
+    { n:'Pog Unblocked',  u:'https://sites.google.com/view/pogunblocked' },
+    { n:'Classic Minecraft',u:'https://classic.minecraft.net/' },
+    { n:'Murdle',         u:'https://murdle.com' },
+    { n:'TierMaker',      u:'https://tiermaker.com' },
+    { n:'UwuWuFu',        u:'https://uwuwufu.com' },
+    { n:'AirConsole',     u:'https://airconsole.com' },
+    { n:'Rubik Online',   u:'https://mescolatorecubodirubik.com' },
+    { n:'Bored.com',      u:'https://bored.com' },
+  ]},
+  { title: '🎨 Interattivi & Arte', links: [
+    { n:'MrDoob',         u:'https://mrdoob.com/' },
+    { n:'Neal.fun',       u:'https://neal.fun' },
+    { n:'Floor796',       u:'https://floor796.com' },
+    { n:'David.li',       u:'https://david.li/' },
+    { n:'Bongo.cat',      u:'https://bongo.cat/' },
+    { n:'DrawAStickman',  u:'https://drawastickman.com/' },
+    { n:'Benisland PetPet',u:'https://benisland.neocities.org/petpet/' },
+    { n:'PetPetGenerator',u:'https://www.petpetgenerator.com/' },
+    { n:'Sketch MetaDemo',u:'https://sketch.metademolab.com/canvas' },
+    { n:'Stein.world',    u:'https://stein.world/' },
+    { n:'Aidn WOWA',      u:'https://aidn.jp/wowa/' },
+    { n:'Bonne-Sobri',    u:'https://bonne-sobriyearte.havasfactory.com/fin' },
+    { n:'Picrew',         u:'https://picrew.me/en/image_maker/2177347' },
+    { n:'Messenger Abeto',u:'https://messenger.abeto.co' },
+    { n:'NewCP',          u:'https://newcp.net/' },
+  ]},
+  { title: '🎵 Musica interattiva', links: [
+    { n:'MusicLab Chrome',u:'https://musiclab.chromeexperiments.com/' },
+    { n:'Pinball Flutter', u:'https://pinball.flutter.dev/#/' },
+    { n:'Plink',          u:'https://dinahmoelabs.com/plink/' },
+    { n:'Rave.dj',        u:'https://rave.dj/mix' },
+    { n:'Lofigirl',       u:'https://lofigirl.com/generator/' },
+    { n:'My Instants',    u:'https://www.myinstants.com/en/index/us/' },
+  ]},
+  { title: '🗺 Mappe & Simulatori', links: [
+    { n:'Watabou',          u:'https://watabou.itch.io/' },
+    { n:'HappyIslandDesigner',u:'https://eugeneration.github.io/HappyIslandDesigner/' },
+    { n:'Noclip',           u:'https://noclip.website/' },
+    { n:'Geo-FS',           u:'https://geo-fs.com' },
+    { n:'Inkarnate',        u:'https://inkarnate.com/maps' },
+    { n:'DungeonScrawl',    u:'https://dungeonscrawl.com' },
+    { n:'City Roads',       u:'https://anvaka.github.io/city-roads/' },
+    { n:'MapGenie',         u:'https://mapgenie.io' },
+  ]},
+  { title: '🌐 Varie svago', links: [
+    { n:'LanguageGuide',  u:'https://languageguide.org' },
+    { n:'Paper2Gal',      u:'https://paper2gal.top' },
+    { n:'Kumospace',      u:'https://www.kumospace.com/' },
+    { n:'Depth of Field', u:'https://jherr.github.io/depth-of-field/' },
+  ]},
+];
+
+// ─────────────────────────────────────────────
+// BUILD NAV
+// ─────────────────────────────────────────────
+const navScroll = document.getElementById('navScroll');
+const mobileMenu = document.getElementById('mobileMenu');
+
+SECTIONS.forEach(sec => {
+  // desktop pill
+  const pill = document.createElement('button');
+  pill.className = 'nav-pill';
+  pill.dataset.id = sec.id;
+  pill.innerHTML = `<span class="material-icons-round">${sec.icon}</span>${sec.label}<span class="material-icons-round pill-arrow">expand_more</span>`;
+  pill.addEventListener('click', (e) => { e.stopPropagation(); togglePanel(sec.id); });
+  navScroll.appendChild(pill);
+
+  // mobile item
+  const mi = document.createElement('div');
+  mi.className = 'mobile-nav-item';
+  mi.innerHTML = `<span style="display:flex;align-items:center;gap:8px"><span class="material-icons-round">${sec.icon}</span>${sec.label}</span><span class="material-icons-round" style="font-size:18px;color:var(--md-gray-light)">chevron_right</span>`;
+  mi.addEventListener('click', () => { closeMobileMenu(); togglePanel(sec.id); });
+  mobileMenu.appendChild(mi);
+});
+
+// fun pill
+const funPill = document.createElement('button');
+funPill.className = 'nav-pill fun-pill';
+funPill.innerHTML = `<span class="material-icons-round">sports_esports</span>Svago`;
+funPill.addEventListener('click', () => { closePanel(); showFunPage(); });
+navScroll.appendChild(funPill);
+
+const funMi = document.createElement('div');
+funMi.className = 'mobile-nav-item';
+funMi.innerHTML = `<span style="display:flex;align-items:center;gap:8px"><span class="material-icons-round">sports_esports</span>Svago</span><span class="material-icons-round" style="font-size:18px;color:var(--md-gray-light)">chevron_right</span>`;
+funMi.addEventListener('click', () => { closeMobileMenu(); showFunPage(); });
+mobileMenu.appendChild(funMi);
+
+// quick grid
+const quickGrid = document.getElementById('quickGrid');
+SECTIONS.forEach(sec => {
+  const card = document.createElement('div');
+  card.className = 'quick-card';
+  card.innerHTML = `<span class="material-icons-round">${sec.icon}</span>${sec.label}`;
+  card.addEventListener('click', () => togglePanel(sec.id));
+  quickGrid.appendChild(card);
+});
+const funCard = document.createElement('div');
+funCard.className = 'quick-card';
+funCard.innerHTML = `<span class="material-icons-round">sports_esports</span>Svago`;
+funCard.addEventListener('click', showFunPage);
+quickGrid.appendChild(funCard);
+
+// ─────────────────────────────────────────────
+// BUILD PANEL
+// ─────────────────────────────────────────────
+let activePanel = null;
+
+function buildPanelContent(sec) {
+  const inner = document.getElementById('panelInner');
+  inner.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.className = 'panel-title';
+  title.textContent = sec.label;
+  inner.appendChild(title);
+
+  if (sec.isArchive) {
+    // accordion layout
+    const acc = document.createElement('div');
+    acc.className = 'archive-accordion';
+    sec.sub.forEach(subsec => {
+      const item = document.createElement('div');
+      item.className = 'acc-item';
+      item.innerHTML = `<div class="acc-header">${subsec.title}<span class="material-icons-round">expand_more</span></div><div class="acc-body"></div>`;
+      const body = item.querySelector('.acc-body');
+      const ul = document.createElement('ul');
+      ul.className = 'link-list';
+      subsec.links.forEach(link => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${link.u}" target="_blank" rel="noopener"><span class="material-icons-round">open_in_new</span>${link.n}</a>`;
+        ul.appendChild(li);
+      });
+      body.appendChild(ul);
+      item.querySelector('.acc-header').addEventListener('click', () => item.classList.toggle('open'));
+      acc.appendChild(item);
+    });
+    inner.appendChild(acc);
+  } else {
+    // grid layout
+    const grid = document.createElement('div');
+    grid.className = 'panel-grid';
+    sec.sub.forEach(subsec => {
+      const sub = document.createElement('div');
+      sub.className = 'subsection';
+      const stitle = document.createElement('div');
+      stitle.className = 'subsection-title';
+      stitle.textContent = subsec.title;
+      sub.appendChild(stitle);
+      const ul = document.createElement('ul');
+      ul.className = 'link-list';
+      subsec.links.forEach(link => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${link.u}" target="_blank" rel="noopener"><span class="material-icons-round">open_in_new</span>${link.n}</a>`;
+        ul.appendChild(li);
+      });
+      sub.appendChild(ul);
+      grid.appendChild(sub);
+    });
+    inner.appendChild(grid);
+  }
+}
+
+function togglePanel(id) {
+  if (activePanel === id) { closePanel(); return; }
+  const sec = SECTIONS.find(s => s.id === id);
+  if (!sec) return;
+  buildPanelContent(sec);
+  activePanel = id;
+  document.getElementById('dropdownPanel').classList.add('active');
+  document.getElementById('dropdownOverlay').classList.add('active');
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  const pill = document.querySelector(`.nav-pill[data-id="${id}"]`);
+  if (pill) pill.classList.add('active');
+}
+
+function closePanel() {
+  activePanel = null;
+  document.getElementById('dropdownPanel').classList.remove('active');
+  document.getElementById('dropdownOverlay').classList.remove('active');
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+}
+
+document.getElementById('dropdownOverlay').addEventListener('click', closePanel);
+
+// ─────────────────────────────────────────────
+// BURGER
+// ─────────────────────────────────────────────
+const burgerBtn = document.getElementById('burgerBtn');
+burgerBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  burgerBtn.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  closePanel();
+});
+
+function closeMobileMenu() {
+  burgerBtn.classList.remove('active');
+  mobileMenu.classList.remove('active');
+}
+
+document.addEventListener('click', (e) => {
+  if (!mobileMenu.contains(e.target) && !burgerBtn.contains(e.target)) closeMobileMenu();
+  const panel = document.getElementById('dropdownPanel');
+  const navEl = document.getElementById('navScroll');
+  if (!panel.contains(e.target) && !navEl.contains(e.target)) closePanel();
+});
+
+// ─────────────────────────────────────────────
+// FUN PAGE
+// ─────────────────────────────────────────────
+const funPage = document.getElementById('funPage');
+const homePage = document.getElementById('homePage');
+const funSections = document.getElementById('funSections');
+
+// build fun page content
+FUN_SECTIONS.forEach(fsec => {
+  const wrapper = document.createElement('div');
+  const t = document.createElement('div');
+  t.className = 'fun-section-title';
+  t.textContent = fsec.title;
+  wrapper.appendChild(t);
+  const grid = document.createElement('div');
+  grid.className = 'fun-links-grid';
+  fsec.links.forEach(link => {
+    const a = document.createElement('a');
+    a.className = 'fun-link';
+    a.href = link.u;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `<span class="material-icons-round">open_in_new</span>${link.n}`;
+    grid.appendChild(a);
+  });
+  wrapper.appendChild(grid);
+  funSections.appendChild(wrapper);
+});
+
+function showFunPage() {
+  homePage.style.display = 'none';
+  funPage.classList.add('active');
+  closePanel();
+}
+
+document.getElementById('funBack').addEventListener('click', () => {
+  homePage.style.display = '';
+  funPage.classList.remove('active');
+});
+
+// ─────────────────────────────────────────────
+// SEARCH — no duplicates
+// ─────────────────────────────────────────────
+// Build a flat deduplicated index
+const searchIndex = [];
+const seenUrls = new Set();
+
+function addToIndex(links, category) {
+  links.forEach(link => {
+    const clean = link.u.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,'').toLowerCase();
+    if (seenUrls.has(clean)) return;
+    seenUrls.add(clean);
+    searchIndex.push({ n: link.n, u: link.u, cat: category });
+  });
+}
+
+SECTIONS.forEach(sec => {
+  sec.sub.forEach(sub => addToIndex(sub.links, sec.label));
+});
+FUN_SECTIONS.forEach(fsec => {
+  addToIndex(fsec.links, 'Svago');
+});
+
+const searchInput = document.getElementById('categorySearch');
+const searchResults = document.getElementById('searchResults');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.classList.remove('active'); return; }
+  const matches = searchIndex.filter(item =>
+    item.n.toLowerCase().includes(q) || item.u.toLowerCase().includes(q)
+  ).slice(0, 20);
+  if (matches.length === 0) {
+    searchResults.classList.remove('active');
+    return;
+  }
+  matches.forEach(item => {
+    const a = document.createElement('a');
+    a.className = 'search-result-item';
+    a.href = item.u;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `<span class="result-name">${item.n}</span><span class="result-cat">${item.cat}</span>`;
+    searchResults.appendChild(a);
+  });
+  searchResults.classList.add('active');
+});
+
+document.addEventListener('click', (e) => {
+  if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+    searchResults.classList.remove('active');
+  }
+});
+
+// ─────────────────────────────────────────────
+// CHECK SITES
+// ─────────────────────────────────────────────
+const checkBtn = document.getElementById('checkBtn');
+const popupOverlay = document.getElementById('popupOverlay');
+const popupTitle = document.getElementById('popupTitle');
+const popupBody = document.getElementById('popupBody');
+const popupClose = document.getElementById('popupClose');
+
+popupClose.addEventListener('click', () => popupOverlay.classList.remove('active'));
+popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) popupOverlay.classList.remove('active'); });
+
+checkBtn.addEventListener('click', async () => {
+  popupTitle.textContent = 'Verifica siti in corso…';
+  popupBody.innerHTML = '<div class="check-progress">Controllo in corso, potrebbe richiedere qualche secondo…</div>';
+  popupOverlay.classList.add('active');
+
+  // sample a subset to keep it fast (first link of each subsection)
+  const toCheck = [];
+  const seen = new Set();
+  SECTIONS.forEach(sec => {
+    sec.sub.forEach(sub => {
+      if (sub.links.length > 0) {
+        const l = sub.links[0];
+        if (!seen.has(l.u)) { seen.add(l.u); toCheck.push(l); }
+      }
+    });
+  });
+
+  const results = await Promise.allSettled(
+    toCheck.map(link =>
+      fetch(link.u, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache', signal: AbortSignal.timeout(5000) })
+        .then(() => ({ link, ok: true }))
+        .catch(() => ({ link, ok: false }))
+    )
+  );
+
+  const failed = results
+    .map(r => r.value || r.reason)
+    .filter(r => r && !r.ok);
+
+  popupTitle.textContent = 'Risultato verifica';
+  if (failed.length === 0) {
+    popupBody.innerHTML = '<p style="color:var(--md-green-accent);font-weight:600;font-size:15px">✅ Tutti i siti controllati risultano raggiungibili!</p><p style="margin-top:8px;font-size:13px;color:var(--md-gray)">Nota: alcuni siti con restrizioni CORS potrebbero non rispondere al controllo pur essendo online.</p>';
+  } else {
+    const list = failed.map(r => `<li><span class="material-icons-round err">error</span>${r.link ? r.link.n : '?'}</li>`).join('');
+    popupBody.innerHTML = `<p style="margin-bottom:10px;font-size:13px;color:var(--md-gray)">I seguenti siti non hanno risposto (potrebbero essere offline o bloccare i controlli automatici):</p><ul class="popup-list">${list}</ul>`;
+  }
+});
+</script>
+</body>
+</html>
