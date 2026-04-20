@@ -1,1 +1,1 @@
-https://jeriko001.github.io/thelordofthelinks/
+https://jeriko001.github.io/Thelordofthelinks/
